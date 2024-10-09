@@ -2,194 +2,110 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\PdsServiceInterface;
+use App\Http\Requests\PdsRequest;
 use App\Models\Pds;
-use Illuminate\Support\Facades\Validator;
-
 use Illuminate\Http\Request;
 
-class pdsController extends Controller
+class PdsController extends Controller
 {
+    protected $pdsService;
 
+    public function __construct(PdsServiceInterface $pdsService)
+    {
+        $this->pdsService = $pdsService;
+    }
 
     public function pds()
     {
-        $personalData = Pds::all();
-        // dd($personalData);
+        $personalData = $this->pdsService->getAllPds();
         return view('pds.index', compact('personalData'));
     }
+
     public function creatPds()
     {
         return view('pds.create');
     }
+
     public function viewPdsData($id)
     {
-        $personalData = Pds::where('id', $id)->first();
-
-        // dd($Data);
+        $personalData = $this->pdsService->getPdsById($id);
         return view('pds.view', compact('personalData'));
     }
-    public function storePdsData(Request $request)
+
+    public function storePdsData(PdsRequest $request)
     {
         try {
-            $rules = [
-                'email' => 'required|email|unique:pds,email',
-                'fullName' => 'required|string|max:255',
-                'phone' => 'required|string|max:15',
-                'address' => 'required|string|max:255',
-                'age' => 'required|integer',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ];
-
-            $messages = [
-                'email.required' => 'Email is required',
-                'email.email' => 'Email must be a valid email address',
-                'email.unique' => 'Email must be unique',
-                'fullName.required' => 'Full Name is required',
-                'phone.required' => 'Phone number is required',
-                'address.required' => 'Address is required',
-                'age.required' => 'Age is required',
-                'age.integer' => 'Age must be an integer',
-            ];
-
-            $validator = Validator::make($request->all(), $rules, $messages);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
             $fileName = null;
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $fileName = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('images'), $fileName);
             }
-
-            $target = new Pds;
-            $target->email = $request->email;
-            $target->fullName = $request->fullName;
-            $target->phone = $request->phone;
-            $target->address = $request->address;
-            $target->age = $request->age;
-            $target->image = $fileName;
-            $target->save();
+            Pds::create(array_merge($request->validated(), ['image' => $fileName]));
 
             return redirect()->route('pds')->with('success', 'Personal Data saved successfully');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 
+
     public function editPds($id)
     {
-        $personalData = Pds::find($id);
-
+        $personalData = $this->pdsService->getPdsById($id);
         return view('pds.edit', compact('personalData'));
     }
 
-
-    public function updatePds(Request $request)
+    public function updatePds(PdsRequest $request)
     {
         try {
-            $target = Pds::find($request->id);
+            $target = Pds::findOrFail($request->id);
 
-            if (!$target) {
-                return redirect()->back()->with('error', 'Record not found.');
+            if ($request->hasFile('image')) {
+
+                if ($target->image) {
+                    $oldImagePath = public_path('images/' . $target->image);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                $image = $request->file('image');
+                $fileName = time() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path('images'), $fileName);
+                $target->image = $fileName;
             }
 
-            $rules = [
-                'email' => 'required|email|unique:pds,email,' . $request->id,
-                'fullName' => 'required|string|max:255',
-                'phone' => 'required|string|max:15',
-                'address' => 'required|string|max:255',
-                'age' => 'required|integer',
-            ];
-
-            $messages = [
-                'email.required' => 'Email is required',
-                'email.email' => 'Email must be a valid email address',
-                'email.unique' => 'Email must be unique',
-                'fullName.required' => 'Full Name is required',
-                'phone.required' => 'Phone number is required',
-                'address.required' => 'Address is required',
-                'age.required' => 'Age is required',
-                'age.integer' => 'Age must be an integer',
-            ];
-
-            $validator = Validator::make($request->all(), $rules, $messages);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            $target->email = $request->email;
-            $target->fullName = $request->fullName;
-            $target->phone = $request->phone;
-            $target->address = $request->address;
-            $target->age = $request->age;
-            $target->save();
+            $target->update($request->validated());
 
             return redirect()->route('pds')->with('success', 'Data updated successfully');
         } catch (\Exception $e) {
-            \Log::error($e);
-
-
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
 
     public function deletePds($id)
     {
-        try {
-            $pds = Pds::find($id);
-            // $imagePath = public_path('images/' . $pds->image);
-
-            // if (file_exists($imagePath)) {
-            //     unlink($imagePath);
-            // }
-            $pds->delete();
-
-            return redirect()->route('pds')->with('success', 'Branch deleted successfully');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
-        }
+        $this->pdsService->deletePds($id);
+        return redirect()->route('pds')->with('success', 'PDS deleted successfully');
     }
 
-
-
-
-    // ///////////// softDelete
-
-
-    // List all soft deleted PDS records
     public function softDeleted()
     {
-        $pds = Pds::onlyTrashed()->get(); // Get only soft-deleted records
+        $pds = $this->pdsService->getSoftDeletedPds();
         return view('pds.softdelete', compact('pds'));
     }
 
-    // Restore a soft-deleted PDS record
     public function restore($id)
     {
-        $pds = Pds::withTrashed()->find($id);
-        if ($pds) {
-            $pds->restore();
-            return redirect()->route('softDeleted')->with('success', 'Record restored successfully.');
-        }
-        return redirect()->route('softDeleted')->with('error', 'Record not found.');
+        $this->pdsService->restorePds($id);
+        return redirect()->route('softDeleted')->with('success', 'Record restored successfully');
     }
 
-    // Permanently delete a soft-deleted PDS record
     public function forceDelete($id)
     {
-        $pds = Pds::withTrashed()->find($id);
-        if ($pds) {
-            $imagePath = public_path('images/' . $pds->image);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
-            }
-            $pds->forceDelete();
-            return redirect()->route('softDeleted')->with('success', 'Record permanently deleted successfully.');
-        }
-        return redirect()->route('softDeleted')->with('error', 'Record not found.');
+        $this->pdsService->forceDeletePds($id);
+        return redirect()->route('softDeleted')->with('success', 'Record permanently deleted');
     }
 }
