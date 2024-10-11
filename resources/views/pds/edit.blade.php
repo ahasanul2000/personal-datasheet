@@ -30,7 +30,7 @@
                     </span>
                 </a>
             </div>
-            <form method="POST" action="{{ route('updatePds') }}">
+            <form method="POST" action="{{ route('updatePds') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" class="form-control" id="id" name="id"
                     value="{{ $personalData->id }}">
@@ -79,6 +79,36 @@
                         <div class="text-danger">{{ $message }}</div>
                     @enderror
                 </div>
+                <div class="mb-3">
+                    <label for="image">Image (optional):</label>
+                    @if (isset($personalData->image))
+                        <div class="mt-2">
+                            <img src="{{ asset('images/' . $personalData->image) }}" alt="Current Image"
+                                class="img-thumbnail" style="max-width: 200px;">
+                            <p>Current Image</p>
+                        </div>
+                    @endif
+
+                    <input type="file" class="form-control" id="image" name="image"
+                        placeholder="Choose an image">
+
+                    @error('image')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div>
+
+
+
+
+
+                {{-- <div class="mb-3">
+                    <label for="image">Picture:</label>
+                    <input type="file" name="image" class="form-control" id="image"
+                        placeholder="Choose an image">
+                    @error('image')
+                        <div class="text-danger">{{ $message }}</div>
+                    @enderror
+                </div> --}}
 
                 <button type="submit" class="btn btn-primary">Update</button>
             </form>
