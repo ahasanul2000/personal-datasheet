@@ -40,10 +40,23 @@ class PdsService implements PdsServiceInterface
 
     public function updatePds(Request $request, $id)
     {
+
+
         $pds = Pds::find($id);
 
         if (!$pds) {
-            return null;
+            throw new \Exception('PDS record not found');
+        }
+
+        if ($request->hasFile('image')) {
+
+            if ($pds->image) {
+                $this->deleteOldImage($pds->image);
+            }
+            $image = $request->file('image');
+            $fileName = time() . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('images'), $fileName);
+            $pds->image = $fileName;
         }
 
         $pds->update([
@@ -56,6 +69,19 @@ class PdsService implements PdsServiceInterface
 
         return $pds;
     }
+
+
+
+    protected function deleteOldImage($imageName)
+    {
+        $imagePath = public_path('images/' . $imageName);
+
+        if (file_exists($imagePath) && !is_dir($imagePath)) {
+            unlink($imagePath);
+        }
+    }
+
+
 
     public function deletePds($id)
     {
@@ -77,11 +103,16 @@ class PdsService implements PdsServiceInterface
     public function forceDeletePds($id)
     {
         $pds = Pds::withTrashed()->find($id);
+
         if ($pds) {
-            $imagePath = public_path('images/' . $pds->image);
-            if (file_exists($imagePath)) {
+
+            $imageFileName = $pds->image;
+            $imagePath = public_path('images/' . $imageFileName);
+
+            if (file_exists($imagePath) && !is_dir($imagePath)) {
                 unlink($imagePath);
             }
+
             return $pds->forceDelete();
         }
         return false;
