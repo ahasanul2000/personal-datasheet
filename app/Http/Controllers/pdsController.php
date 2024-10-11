@@ -36,20 +36,12 @@ class PdsController extends Controller
     public function storePdsData(PdsRequest $request)
     {
         try {
-            $fileName = null;
-            if ($request->hasFile('image')) {
-                $image = $request->file('image');
-                $fileName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images'), $fileName);
-            }
-            Pds::create(array_merge($request->validated(), ['image' => $fileName]));
-
+            $this->pdsService->createPds($request);
             return redirect()->route('pds')->with('success', 'Personal Data saved successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
-
 
     public function editPds($id)
     {
@@ -57,33 +49,22 @@ class PdsController extends Controller
         return view('pds.edit', compact('personalData'));
     }
 
-    public function updatePds(PdsRequest $request)
+    public function updatesPds(PdsRequest $request)
     {
         try {
-            $target = Pds::findOrFail($request->id);
+            $target = $this->pdsService->getPdsById($request->id);
 
-            if ($request->hasFile('image')) {
-
-                if ($target->image) {
-                    $oldImagePath = public_path('images/' . $target->image);
-                    if (file_exists($oldImagePath)) {
-                        unlink($oldImagePath);
-                    }
-                }
-
-                $image = $request->file('image');
-                $fileName = time() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path('images'), $fileName);
-                $target->image = $fileName;
+            if (!$target) {
+                return redirect()->back()->with('error', 'PDS not found');
             }
-
-            $target->update($request->validated());
+            $this->pdsService->updatePds($request, $target->id);
 
             return redirect()->route('pds')->with('success', 'Data updated successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
+
 
     public function deletePds($id)
     {
