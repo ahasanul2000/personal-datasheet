@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/creatPds', [pdsController::class, 'creatPds'])->name('creatPds');
     Route::post('/storePdsData', [PdsController::class, 'storePdsData'])->name('storePdsData');
     Route::get('/editPds/{id}', [PdsController::class, 'editPds']);
-    Route::post('/updatePds', [PdsController::class, 'updatePds'])->name('updatePds');
+    Route::post('/updatePds', [PdsController::class, 'updatesPds'])->name('updatePds');
     Route::get('/deletePds/{id}', [PdsController::class, 'deletePds']);
     Route::get('/viewPdsData/{id}', [PdsController::class, 'viewPdsData']);
 
