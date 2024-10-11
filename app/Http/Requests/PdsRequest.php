@@ -8,18 +8,18 @@ class PdsRequest extends FormRequest
 {
     public function authorize()
     {
-        return true; // Set to true if you want to allow all users to make this request
+        return true; // Allow all users to make this request
     }
 
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:pds,email,' . $this->id, // Ensure that the email is unique, ignoring the current record
+            'email' => 'required|email|unique:pds,email,' . $this->id,
             'fullName' => 'required|string|max:255',
             'phone' => 'required|string|max:15',
             'address' => 'required|string|max:255',
             'age' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image' => 'image|mimes:jpeg,png,jpg,gif', // Image validation rule
         ];
     }
 
@@ -28,12 +28,15 @@ class PdsRequest extends FormRequest
         return [
             'email.required' => 'Email is required',
             'email.email' => 'Email must be a valid email address',
-            'email.unique' => 'Email must be unique',
+            'email.unique' => 'This email is already in use',
             'fullName.required' => 'Full Name is required',
             'phone.required' => 'Phone number is required',
             'address.required' => 'Address is required',
             'age.required' => 'Age is required',
-            'age.integer' => 'Age must be an integer',
+            'age.integer' => 'Age must be a valid number',
+            'image.image' => 'Please upload a valid image file', // Custom error message for image validation
+            'image.mimes' => 'Allowed image types are jpeg, png, jpg, gif, and svg',
+            'image.max' => 'The image size must not exceed 2MB',
         ];
     }
 }
