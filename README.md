@@ -94,29 +94,8 @@ This section of the **Personal Data Sheet Management** project implements basic 
     - Replaced direct model calls in the UserController with service methods to ensure better separation of concerns.
 
 6. **Define and Apply Validation Rules**:
+
     - Created a dedicated request class for user data and defined validation rules to ensure data integrity.
-
-### Notes
-
--   Consider additional test cases to improve test coverage.
--   Customize method names and validation rules according to project requirements.
--   Ensure proper service binding in your application's service provider.
-
-## Conclusion
-
-This assessment provides a solid foundation for user management within the Personal Data Sheet Management system. The implementation of the Service Pattern and unit tests enhances maintainability and reliability, laying the groundwork for future enhancements.
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 ## Running Migrations and Seeders
 
@@ -142,3 +121,25 @@ Run the following command: php artisan migrate
 ### Step 3: Run Seeder
 
 Run the following command: php artisan db:seed --class=UserSeeder
+
+### Notes
+
+-   Consider additional test cases to improve test coverage.
+-   Customize method names and validation rules according to project requirements.
+-   Ensure proper service binding in your application's service provider.
+
+## Conclusion
+
+This assessment provides a solid foundation for user management within the Personal Data Sheet Management system. The implementation of the Service Pattern and unit tests enhances maintainability and reliability, laying the groundwork for future enhancements.
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+
+## License
+
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
