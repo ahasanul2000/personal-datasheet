@@ -17,21 +17,21 @@ This section of the **Personal Data Sheet Management** project implements basic 
 
 1. **Initialize a New Project**:
 
-    - Created a new Laravel project using the latest version.
+    - Created a new Laravel project using the Laravel 9 version.
 
 2. **Utilize Laravel's Default Login Feature**:
 
     - Integrated Laravel's built-in authentication features, including registration, login, and password reset functionalities.
     - Implemented the `Auth::routes()` method in `routes/web.php` to enable default authentication routes.
 
-3. **User Management Pages**:
+3. **Personal Details Management**:
 
     - Created the following pages:
-        - **List Users**: A page that displays all registered users in a paginated format.
-        - **View User**: A page that displays the details of a single user.
-        - **Create User**: A form to add new users, including fields for user details and an option to upload a photo as a user avatar.
-        - **Edit User**: A form for editing existing user details.
-        - **Delete User**: Implemented functionality to delete users with an option for soft deletion.
+        - **List Users Info**: A page that displays all registered users in a paginated format.
+        - **View User Info**: A page that displays the details of a single user.
+        - **Create User Info**: A form to add new users, including fields for user details and an option to upload a photo as a user avatar.
+        - **Edit User Info**: A form for editing existing user details.
+        - **Delete User Info**: Implemented functionality to delete users with an option for soft deletion.
 
 4. **Soft Delete Functionality**:
     - Implemented soft delete functionality using Laravel's Eloquent ORM.
@@ -117,3 +117,28 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Running Migrations and Seeders
+
+To set up the database for the **Personal Data Sheet Management** project, you'll need to run the migrations and seeders. Follow these steps:
+
+### Step 1: Configure Your Database
+
+-   Open the `.env` file in the root of your project and configure your database connection settings:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=your_database_name
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
+
+### Step 2: Run Migration
+
+Run the following command: php artisan migrate
+
+### Step 3: Run Seeder
+
+Run the following command: php artisan db:seed --class=UserSeeder
