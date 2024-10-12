@@ -18,7 +18,7 @@ class PdsServiceTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->pdsService = app(PdsService::class);  // Inject the PdsService
+        $this->pdsService = app(PdsService::class);
     }
 
     /** @test */
