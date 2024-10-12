@@ -18,19 +18,31 @@ class PdsController extends Controller
 
     public function pds()
     {
-        $personalData = $this->pdsService->getAllPds();
-        return view('pds.index', compact('personalData'));
+        try {
+            $personalData = $this->pdsService->getAllPds();
+            return view('pds.index', compact('personalData'));
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error fetching personal data: ' . $e->getMessage());
+        }
     }
 
     public function creatPds()
     {
-        return view('pds.create');
+        try {
+            return view('pds.create');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error loading create page: ' . $e->getMessage());
+        }
     }
 
     public function viewPdsData($id)
     {
-        $personalData = $this->pdsService->getPdsById($id);
-        return view('pds.view', compact('personalData'));
+        try {
+            $personalData = $this->pdsService->getPdsById($id);
+            return view('pds.view', compact('personalData'));
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors('Error viewing personal data: ' . $e->getMessage());
+        }
     }
 
     public function storePdsData(PdsRequest $request)
@@ -45,8 +57,12 @@ class PdsController extends Controller
 
     public function editPds($id)
     {
-        $personalData = $this->pdsService->getPdsById($id);
-        return view('pds.edit', compact('personalData'));
+        try {
+            $personalData = $this->pdsService->getPdsById($id);
+            return view('pds.edit', compact('personalData'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     public function updatesPds(PdsRequest $request)
@@ -68,25 +84,41 @@ class PdsController extends Controller
 
     public function deletePds($id)
     {
-        $this->pdsService->deletePds($id);
-        return redirect()->route('pds')->with('success', 'PDS deleted successfully');
+        try {
+            $this->pdsService->deletePds($id);
+            return redirect()->route('pds')->with('success', 'PDS deleted successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     public function softDeleted()
     {
-        $pds = $this->pdsService->getSoftDeletedPds();
-        return view('pds.softdelete', compact('pds'));
+        try {
+            $pds = $this->pdsService->getSoftDeletedPds();
+            return view('pds.softdelete', compact('pds'));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     public function restore($id)
     {
-        $this->pdsService->restorePds($id);
-        return redirect()->route('softDeleted')->with('success', 'Record restored successfully');
+        try {
+            $this->pdsService->restorePds($id);
+            return redirect()->route('softDeleted')->with('success', 'Record restored successfully');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     public function forceDelete($id)
     {
-        $this->pdsService->forceDeletePds($id);
-        return redirect()->route('softDeleted')->with('success', 'Record permanently deleted');
+        try {
+            $this->pdsService->forceDeletePds($id);
+            return redirect()->route('softDeleted')->with('success', 'Record permanently deleted');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 }
