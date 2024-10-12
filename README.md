@@ -83,8 +83,8 @@ This section of the **Personal Data Sheet Management** project implements basic 
 4. **Develop Unit Tests**:
 
     - Wrote unit tests for the service class to cover key functionalities:
-        - Listing users
-        - Adding new users
+        - Listing PDS
+        - Adding new users in PDS
         - Updating existing users
         - Soft deleting users
         - Handling trashed users
