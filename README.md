@@ -21,7 +21,7 @@ This section of the **Personal Data Sheet Management** project implements basic 
 
 2. **Utilize Laravel's Default Login Feature**:
 
-    - Integrated Laravel's built-in authentication features, including registration, login, and password reset functionalities.
+    - Integrated Laravel's built-in authentication Breeze, including registration, login, and password reset functionalities.
     - Implemented the `Auth::routes()` method in `routes/web.php` to enable default authentication routes.
 
 3. **Personal Details Management**:
