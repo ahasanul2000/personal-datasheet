@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 Route::middleware('auth')->group(function () {
+
+    // All type of operation for Personal Data Sheet(PDS)
     Route::get('/pds', [pdsController::class, 'pds'])->name('pds');
     Route::get('/creatPds', [pdsController::class, 'creatPds'])->name('creatPds');
     Route::post('/storePdsData', [PdsController::class, 'storePdsData'])->name('storePdsData');
@@ -38,9 +40,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/viewPdsData/{id}', [PdsController::class, 'viewPdsData']);
 
 
-
-
-    // //soft delete 
     // Routes for soft delete operations
     Route::get('/softdeleted', [PdsController::class, 'softDeleted'])->name('softDeleted');
     Route::post('/restore/{id}', [PdsController::class, 'restore'])->name('restore');
