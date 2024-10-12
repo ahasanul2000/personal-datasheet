@@ -23,9 +23,7 @@ class PdsService implements PdsServiceInterface
         $fileName = null;
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $fileName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $fileName);
+            $fileName = $this->uploadImage($request->file('image'));
         }
 
         return Pds::create([
@@ -40,22 +38,17 @@ class PdsService implements PdsServiceInterface
 
     public function updatePds(Request $request, $id)
     {
-
-
         $pds = Pds::find($id);
 
         if (!$pds) {
             throw new \Exception('PDS record not found');
         }
-
         if ($request->hasFile('image')) {
 
             if ($pds->image) {
                 $this->deleteOldImage($pds->image);
             }
-            $image = $request->file('image');
-            $fileName = time() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('images'), $fileName);
+            $fileName = $this->uploadImage($request->file('image'));
             $pds->image = $fileName;
         }
 
@@ -70,8 +63,12 @@ class PdsService implements PdsServiceInterface
         return $pds;
     }
 
-
-
+    protected function uploadImage($image)
+    {
+        $fileName = time() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('images'), $fileName);
+        return $fileName;
+    }
     protected function deleteOldImage($imageName)
     {
         $imagePath = public_path('images/' . $imageName);
@@ -80,9 +77,6 @@ class PdsService implements PdsServiceInterface
             unlink($imagePath);
         }
     }
-
-
-
     public function deletePds($id)
     {
         $pds = Pds::find($id);
